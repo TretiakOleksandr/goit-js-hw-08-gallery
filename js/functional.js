@@ -4,7 +4,9 @@ const galleryContaier = document.querySelector('.js-gallery'); // місце п�
 const lightboxEl = document.querySelector('.js-lightbox'); // overlay
 const lightboxImageEl = document.querySelector('.lightbox__image'); // картинка на overlay
 
-const galleryMarkup = createGalleryMarkup(images);
+let currentItem = null; // вибраний елемент галереї
+
+const galleryMarkup = createGalleryMarkup(images); // створення галереї
 
 galleryContaier.insertAdjacentHTML('beforeend', galleryMarkup); // рендер галереї
 
@@ -43,9 +45,10 @@ function onImageClick(evt) {
 
     lightboxEl.classList.add('is-open');
 
+    currentItem = evt.target.closest('.gallery__item');  // знаходимо поточний елемент списку
+
     lightboxImageEl.setAttribute('src', evt.target.dataset.source);
     lightboxImageEl.setAttribute('alt', evt.target.attributes?.alt.value);
-
 }
 
 function onLightboxClick(evt) {
@@ -56,8 +59,26 @@ function onLightboxClick(evt) {
 }
 
 function onKeyDowned(evt) {
-    if (evt.code === 'Escape') {
+    if (evt.code === 'Escape') {  // закриття Esc
         closeLightbox();
+    }
+
+    if (evt.code === 'ArrowRight') {
+
+        currentItem = currentItem.nextElementSibling === null
+        ? currentItem.parentNode.firstElementChild
+        : currentItem.nextElementSibling;
+
+        changeImage();        
+    }
+
+    if (evt.code === 'ArrowLeft') {
+
+        currentItem = currentItem.previousElementSibling === null
+        ? currentItem.parentNode.lastElementChild
+        : currentItem.previousElementSibling;
+        
+        changeImage();        
     }
 }
 
@@ -67,4 +88,10 @@ function closeLightbox() {
     lightboxImageEl.setAttribute('alt', '');
     lightboxEl.removeEventListener('click', onLightboxClick);
     window.removeEventListener('keydown', onKeyDowned);
+}
+
+function changeImage() {
+    let newImage = currentItem.querySelector('.gallery__image');
+    lightboxImageEl.setAttribute('src', newImage.dataset.source);
+    lightboxImageEl.setAttribute('alt', newImage.attributes?.alt.value);   
 }
