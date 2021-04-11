@@ -3,15 +3,12 @@ import images from './gallery-items.js'
 const galleryContaier = document.querySelector('.js-gallery'); // місце під галерею
 const lightboxEl = document.querySelector('.js-lightbox'); // overlay
 const lightboxImageEl = document.querySelector('.lightbox__image'); // картинка на overlay
-const lightboxBtnEl = document.querySelector('.lightbox__button'); // кнопка закриття
 
 const galleryMarkup = createGalleryMarkup(images);
 
-galleryContaier.insertAdjacentHTML('beforeend', galleryMarkup);
+galleryContaier.insertAdjacentHTML('beforeend', galleryMarkup); // рендер галереї
 
 galleryContaier.addEventListener('click', onImageClick);
-
-lightboxBtnEl.addEventListener('click', onCloseBtnClick);
 
 function createGalleryMarkup(images) {
     return images.map(({preview, original, description}) => {
@@ -40,6 +37,10 @@ function onImageClick(evt) {
         return;
     }
 
+    lightboxEl.addEventListener('click', onLightboxClick);
+
+    window.addEventListener('keydown', onKeyDowned);
+
     lightboxEl.classList.add('is-open');
 
     lightboxImageEl.setAttribute('src', evt.target.dataset.source);
@@ -47,8 +48,23 @@ function onImageClick(evt) {
 
 }
 
-function onCloseBtnClick() {
+function onLightboxClick(evt) {
+    if (evt.target.dataset.action === 'close-lightbox'            // закриття кнопкою
+        || evt.target.classList.contains('lightbox__overlay')) {  // закриття при кліку на overlay
+        closeLightbox();
+    }
+}
+
+function onKeyDowned(evt) {
+    if (evt.code === 'Escape') {
+        closeLightbox();
+    }
+}
+
+function closeLightbox() {
     lightboxEl.classList.remove('is-open');
     lightboxImageEl.setAttribute('src', '');
     lightboxImageEl.setAttribute('alt', '');
+    lightboxEl.removeEventListener('click', onLightboxClick);
+    window.removeEventListener('keydown', onKeyDowned);
 }
