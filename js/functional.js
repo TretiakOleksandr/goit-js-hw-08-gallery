@@ -84,14 +84,17 @@ function onKeyDowned(evt) {
 
 function closeLightbox() {
     lightboxEl.classList.remove('is-open');
-    lightboxImageEl.setAttribute('src', '');
-    lightboxImageEl.setAttribute('alt', '');
+    setImageAttributes('', '');
     lightboxEl.removeEventListener('click', onLightboxClick);
     window.removeEventListener('keydown', onKeyDowned);
 }
 
 function changeImage() {
     let newImage = currentItem.querySelector('.gallery__image');
-    lightboxImageEl.setAttribute('src', newImage.dataset.source);
-    lightboxImageEl.setAttribute('alt', newImage.attributes?.alt.value);   
+    setImageAttributes(newImage.dataset.source, newImage.attributes?.alt.value);
+}
+
+function setImageAttributes(src, alt) {
+    lightboxImageEl.setAttribute('src', src);
+    lightboxImageEl.setAttribute('alt', alt);
 }
